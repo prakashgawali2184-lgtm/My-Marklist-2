@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>गुणयादी - Marklist</title>
+  <style>
+/* Prevent mobile browsers from auto-inflating text sizes */
+html, body {
+  -webkit-text-size-adjust: 100% !important;
+  -ms-text-size-adjust: 100% !important;
+  text-size-adjust: 100% !important;
+}
+
+body {
+  font-family: "Noto Sans Devanagari", "Mangal", sans-serif;
+  font-size: 13px;
+}
+
+/* Table styling */
+table {
+  border-collapse: collapse;
+  width: 100%;
+  table-layout: fixed;
+  margin-bottom: 20px;
+  text-align: center; /* default for other columns */
+}
+
+th, td {
+  border: 1px solid #000;
+  padding: 4px;
+  vertical-align: middle;
+}
+
+input {
+  width: 100%;
+  border: none;
+  text-align: center; /* default center */
+  font-size: 13px;
+}
+
+input:focus {
+  outline: none;
+  background: #ffffcc;
+}
+
+/* Header / subheader */
+.header, .school-heading h4 {
+  text-align: center;
+  font-weight: bold;
+  font-size: 15px;
+  padding: 6px 0;
+}
+
+.sub-header, .school-heading h5 {
+  text-align: center;
+  font-size: 14px;
+  margin-top: -4px;
+}
+
+/* Dropdowns */
+.dropdowns {
+  text-align: center;
+  margin: 10px 0;
+}
+
+select, button {
+  margin: 0 5px;
+  padding: 3px 6px;
+  font-size: 13px;
+}
+
+/* Table meta */
+.table-meta {
+  text-align: center;
+  font-size: 13px;
+  margin: 6px 0 4px 0;
+  font-weight: 600;
+}
+
+/* Vertical headers (handled via SVG) */
+.vertical {
+  padding: 6px 2px;
+}
+
+th.vertical svg {
+  display: block;
+  margin: 0 auto;
+  overflow: visible;
+}
+
+/* Column widths */
+.col-num { width: 30px; }
+.col-name { width: 180px; } /* student name column */
+.small-col { width: 28px; }
+body {
+  background-color: #e6ffe6; /* soft light blue, change as you like */
+}
+.go-btn {
+  background-color: #ff8000; 
+  color: #fff;
+  padding: 6px 14px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+/* PDF button */
+.pdf-btn {
+  
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: bold;
+  color:#fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.grade {
+  font-weight: bold;
+}
+
+/* Page break for printing */
+.page-break { page-break-after: always; break-after: page; }
+
+@page {
+  size: A4 portrait;
+  margin: 15mm;
+}
+
+/* Print adjustments */
+@media print {
+  body { margin: 0; padding: 0; }
+  thead { display: table-header-group!important; }
+  tfoot { display: table-footer-group!important; }
+  table { page-break-inside: auto; max-width: 100%; width: 100% !important; }
+  tr { page-break-inside: avoid !important; break-inside: avoid !important; }
+  th, td { padding: 3px !important; font-size: 11px !important; }
+  input { font-size: 11px !important; padding: 2px !important; }
+  .school-heading h4, .header { font-size: 14px !important; }
+  .school-heading h5, .sub-header { font-size: 12px !important; }
+  .meta-row { font-size: 12px !important; }
+}
+
+/* School heading & meta-row */
+.school-heading {
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.school-heading h4, .school-heading h5 {
+  margin: 0;
+}
+
+.meta-row {
+  text-align: center;
+  font-weight: bold;
+  margin: 4px 0;
+  font-size: 14px;
+}
+
+/* Mobile screen adjustments */
+@media only screen and (max-width: 600px) {
+  body { font-size: 11px !important; }
+  .header, .school-heading h4 { font-size: 14px !important; }
+  .sub-header, .school-heading h5, .meta-row { font-size: 12px !important; }
+  .dropdowns select, .dropdowns button { font-size: 12px !important; padding: 2px 4px !important; }
+}
+
+/* -------------------- Force header and student name alignment -------------------- */
+
+/* Header "विद्यार्थ्याचे नाव" centered */
+#tablesContainer thead th.col-name {
+  text-align: center !important;
+}
+
+/* Student names in 2nd column left-aligned */
+#tablesContainer tbody td:nth-child(2) {
+  text-align: left !important;
+}
+
+/* Left-align any input inside 2nd column */
+#tablesContainer tbody td:nth-child(2) input {
+  text-align: left !important;
+}
+
+/* Keep all other inputs center-aligned */
+#tablesContainer tbody td:not(:nth-child(2)) input {
+  text-align: center;
+}
+/* Right-align the "ठेवलेले गुण →" cell in the first row of tbody */
+#tablesContainer tbody tr:first-child td:nth-child(2) {
+  text-align: right !important;
+  font-weight: bold;
+}
+/* Thicker outer border for table */
+#tablesContainer table {
+  border: 2px solid #000 !important;   /* outer frame thicker */
+  border-collapse: collapse;
+}
+
+/* Keep inside grid lines thinner */
+#tablesContainer th, 
+#tablesContainer td {
+  border: 1px solid #000;
+}
+/* -------------------- School logo with heading -------------------- */
+.school-heading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px; /* space between logo and text */
+  margin-bottom: 8px;
+}
+
+.school-heading img {
+  height: 60px;   /* adjust logo size */
+  width: auto;
+}
+.school-header {
+  display: flex;
+  align-items: center;
+  justify-content: center; /* centers the whole block */
+  gap: 15px;
+  margin-bottom: 10px;
+}
+
+.school-logo {
+  width: 60px; /* adjust size as needed */
+  height: auto;
+}
+
+.school-name {
+  text-align: center;
+}
+.action-buttons {
+  display: flex;        /* makes buttons appear in a row */
+  justify-content: center; /* center horizontally */
+  gap: 5px;             /* space between buttons; reduce from 10px to 5px */
+  margin-top: 10px;     /* optional spacing from table */
+}
+
+.pdf-btn {
+  padding: 8px 16px;    /* button size */
+  
+}
+.pdf-btn.download { background-color: #007bff; }
+.pdf-btn.save { background-color: #28a745; }
+.pdf-btn.clear { background-color: #dc3545; }
+
+</style>
+</head>
+<body>
+<!-- Hamburger Button -->
+<button id="hamburgerBtn" style="
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 1000;
+    width: 50px;
+    height: 50px;
+    border-radius: 8px;
+    background-color: #007bff;
+    color: white;
+    font-size: 24px;
+    border: none;
+    cursor: pointer;
+">☰</button>
+
+<!-- Hamburger Menu Container -->
+<div id="hamburgerMenu" style="
+    position: fixed;
+    top: 80px;       /* below the hamburger button */
+    left: 20px;
+    display: none;   /* hidden by default */
+    flex-direction: column;
+    gap: 10px;
+    z-index: 1000;
+">
+    <button id="downloadExcelBtn" style="
+        padding: 8px 16px;
+        border: none;
+        border-radius: 6px;
+        background-color: #28a745;
+        color: white;
+        cursor: pointer;
+        font-weight: bold;
+    ">⬇️ Download Excel</button>
+</div>
+
+<!-- with this one (xlsx-js-style, supports styling) -->
+<script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.min.js"></script>
+<script>
+const downloadExcelBtn = document.getElementById('downloadExcelBtn');
+
+downloadExcelBtn.addEventListener('click', () => {
+  const tables = Array.from(document.querySelectorAll('#tablesContainer table'));
+  if (!tables.length) {
+    alert("No tables found!");
+    return;
+  }
+
+  // Helper: get visible text from a cell (inputs, svg text, or plain text)
+  function getCellText(cell) {
+    const input = cell.querySelector('input, textarea, select');
+    if (input) return String(input.value || "").trim();
+
+    const svgText = cell.querySelector('svg text');
+    if (svgText && svgText.textContent && svgText.textContent.trim()) return svgText.textContent.trim();
+
+    return String(cell.textContent || "").replace(/\u00A0/g, ' ').trim();
+  }
+
+  const wb = XLSX.utils.book_new();
+  const sheetData = [];   // array-of-arrays for the sheet
+  const merges = [];      // merges from table cells and header rows
+  const headerRowsToMerge = []; // indices of rows that should be merged full-width (H1/H2/meta rows)
+  const headerStyleRows = new Set(); // rows that should get header styling (bold + fill)
+  let currentRow = 0;
+
+  tables.forEach((table) => {
+    // Collect preceding school-heading / table-meta / meta-row nodes (so each page keeps its heading)
+    const prev = [];
+    let p = table.previousElementSibling;
+    while (p && (p.classList.contains('table-meta') || p.classList.contains('school-heading') || p.classList.contains('meta-row'))) {
+      prev.unshift(p);
+      p = p.previousElementSibling;
+    }
+
+    // Add those lines as separate rows and mark them for full-width merge later
+    prev.forEach(node => {
+      const textLines = [];
+      if (node.classList.contains('school-heading')) {
+        const h4 = node.querySelector('h4'); if (h4 && h4.innerText.trim()) textLines.push(h4.innerText.trim());
+        const h5 = node.querySelector('h5'); if (h5 && h5.innerText.trim()) textLines.push(h5.innerText.trim());
+      } else {
+        const t = (node.innerText || "").trim();
+        if (t) textLines.push(t);
+      }
+
+      textLines.forEach(tl => {
+        if (!sheetData[currentRow]) sheetData[currentRow] = [];
+        sheetData[currentRow][0] = tl;
+        headerRowsToMerge.push(currentRow);
+        headerStyleRows.add(currentRow);
+        currentRow++;
+      });
+    });
+
+    // Determine how many header rows the table uses (thead length or fall back 1/2)
+    const headerRowCount = table.tHead ? table.tHead.rows.length : (table.rows.length >= 2 ? 2 : 1);
+
+    // Build matrix for this table, handling colspan/rowspan robustly
+    const rows = table.rows;
+    const matrix = [];
+
+    for (let r = 0; r < rows.length; r++) {
+      if (!matrix[r]) matrix[r] = [];
+      let col = 0;
+      const tr = rows[r];
+
+      for (let c = 0; c < tr.cells.length; c++) {
+        // find next free column
+        while (matrix[r][col] !== undefined) col++;
+
+        const cell = tr.cells[c];
+        const text = getCellText(cell);
+        matrix[r][col] = text;
+
+        const colspan = cell.colSpan || 1;
+        const rowspan = cell.rowSpan || 1;
+
+        // record merges for actual table cell spans (absolute rows = currentRow + r)
+        if (colspan > 1 || rowspan > 1) {
+          merges.push({
+            s: { r: currentRow + r, c: col },
+            e: { r: currentRow + r + rowspan - 1, c: col + colspan - 1 }
+          });
+        }
+
+        // placeholders for colspan in same row
+        for (let cc = 1; cc < colspan; cc++) matrix[r][col + cc] = null;
+
+        // reserve placeholders for rowspan in future rows of matrix
+        if (rowspan > 1) {
+          for (let rr = 1; rr < rowspan; rr++) {
+            if (!matrix[r + rr]) matrix[r + rr] = [];
+            for (let cc = 0; cc < colspan; cc++) {
+              matrix[r + rr][col + cc] = null;
+            }
+          }
+        }
+
+        col += colspan;
+      } // end cells loop
+
+      // Mark the table header rows (the first headerRowCount rows) for header-style
+      if (r < headerRowCount) headerStyleRows.add(currentRow + r);
+    } // end rows loop
+
+    // append matrix into global sheetData at currentRow offset
+    for (let r = 0; r < matrix.length; r++) {
+      sheetData[currentRow + r] = matrix[r];
+    }
+
+    // leave one blank row between tables (so pages stack vertically in the excel)
+    currentRow += matrix.length + 1;
+  }); // end tables.forEach
+
+  // compute maximum columns used
+  const maxCols = sheetData.reduce((m, row) => Math.max(m, (row ? row.length : 0)), 0) || 12;
+
+  // Now create full-width merges for the H1/H2/meta rows collected earlier
+  headerRowsToMerge.forEach(rowIndex => {
+    merges.push({
+      s: { r: rowIndex, c: 0 },
+      e: { r: rowIndex, c: maxCols - 1 }
+    });
+  });
+
+  // ensure every row has at least maxCols entries (so aoa_to_sheet writes a clean grid)
+  for (let r = 0; r < sheetData.length; r++) {
+    if (!sheetData[r]) sheetData[r] = [];
+    for (let c = 0; c < maxCols; c++) {
+      if (sheetData[r][c] === undefined) sheetData[r][c] = "";
+    }
+  }
+
+  // build worksheet and apply merges
+  const ws = XLSX.utils.aoa_to_sheet(sheetData);
+  if (merges.length) ws['!merges'] = merges;
+
+  // sensible column widths (first two wider)
+  ws['!cols'] = Array.from({ length: maxCols }, (_, i) => {
+    if (i === 0) return { wch: 6 };    // ह.क्र.
+    if (i === 1) return { wch: 28 };   // विद्यार्थीचे नाव
+    return { wch: 14 };                // other cols
+  });
+  // --- Set row heights (especially for headings and dropdown info) ---
+try {
+  const totalRows = sheetData.length;
+  ws['!rows'] = [];
+
+  // First 3 rows for headings
+  ws['!rows'][0] = { hpt: 35 }; // H1
+  ws['!rows'][1] = { hpt: 28 }; // H2
+  ws['!rows'][2] = { hpt: 35 }; // dropdown info
+
+  // Remaining rows
+  for (let i = 3; i < totalRows; i++) {
+    ws['!rows'][i] = { hpt: 18 };
+  }
+} catch (err) {
+  console.error("Error setting row heights:", err);
+} 
+  // --- Styling: add borders, alignment, bold header rows, center merged headings ---
+  const range = XLSX.utils.decode_range(ws['!ref'] || "A1:A1");
+  for (let R = range.s.r; R <= range.e.r; ++R) {
+    for (let C = range.s.c; C <= range.e.c; ++C) {
+      const addr = XLSX.utils.encode_cell({ r: R, c: C });
+      // ensure cell exists so style can be applied
+      if (!ws[addr]) ws[addr] = { t: 's', v: '' };
+
+      const isHeaderStyle = headerStyleRows.has(R);
+      const isNameCol = (C === 1);
+
+      const alignment = isHeaderStyle
+        ? { horizontal: "center", vertical: "center", wrapText: true }
+        : (isNameCol ? { horizontal: "left", vertical: "center", wrapText: true } : { horizontal: "center", vertical: "center", wrapText: true });
+
+      ws[addr].s = {
+        border: {
+          top:    { style: "thin", color: { rgb: "000000" } },
+          bottom: { style: "thin", color: { rgb: "000000" } },
+          left:   { style: "thin", color: { rgb: "000000" } },
+          right:  { style: "thin", color: { rgb: "000000" } }
+        },
+        alignment,
+        font: isHeaderStyle ? { bold: true, sz: 12 } : { sz: 10 },
+        ...(isHeaderStyle ? { fill: { patternType: "solid", fgColor: { rgb: "FFEFD5" } } } : {})
+      };
+    }
+  }
+
+  // append sheet and save
+  XLSX.utils.book_append_sheet(wb, ws, 'Marklist');
+
+  // hide hamburger menu after starting download
+  const hm = document.getElementById('hamburgerMenu');
+  if (hm) hm.style.display = 'none';
+
+  // write file
+  XLSX.writeFile(wb, 'Marklist.xlsx');
+
+  alert("Download successful!");
+});
+</script>
+
+</script>
+<script>
+  const hamburgerBtn = document.getElementById('hamburgerBtn');
+  const hamburgerMenu = document.getElementById('hamburgerMenu');
+
+  // Toggle menu visibility when hamburger button is clicked
+  hamburgerBtn.addEventListener('click', () => {
+    hamburgerMenu.style.display = 
+      (hamburgerMenu.style.display === 'flex') ? 'none' : 'flex';
+  });
+</script>
+
+<div class="sub header">पुणे विद्यार्थी गृहाचे</div>
+  <div class="header">विद्याप्रशाला हायस्कूल व ज्युनि.कॉलेज,तळेगांव (अं.) ता.जि.नाशिक </div>
+
+  <!-- Session & Year Dropdowns -->
+  <div class="dropdowns">
+    <label>सत्र:
+      <select id="sessionSelect">
+        <option value="">--निवडा--</option>
+        <option value="प्रथम सत्र परीक्षा">प्रथम सत्र परीक्षा</option>
+        <option value="द्वितीय सत्र परीक्षा">द्वितीय सत्र परीक्षा</option>
+      </select>
+    </label>
+    <label>सन:
+      <select id="yearSelect">
+        <option value="">--निवडा--</option>
+        <option value="२०२५-२६">२०२५-२६</option>
+        <option value="२०२६-२७">२०२६-२७</option>
+        <option value="२०२७-२८">२०२७-२८</option>
+        <option value="२०२८-२९">२०२८-२९</option>
+        <option value="२०२९-३०">२०२९-३०</option>
+      </select>
+    </label>
+  </div>
+
+  <!-- Class/Section/Subject/Teacher Dropdowns -->
+  <div class="dropdowns">
+    <label>इयत्ता:
+      <select id="classSelect">
+        <option value="">--निवडा--</option>
+        <option value="5">५ वी</option>
+        <option value="6">६ वी</option>
+        <option value="7">७ वी</option>
+        <option value="8">८ वी</option>
+      </select>
+    </label>
+    <label>तुकडी:
+      <select id="sectionSelect">
+        <option value="">--निवडा--</option>
+        <option value="A">अ</option>
+        <option value="B">ब</option>
+        <option value="C">क</option>
+      </select>
+    </label>
+    <label>विषय:
+      <select id="subjectSelect">
+        <option value="">--निवडा--</option>
+        <option>मराठी</option><option>हिंदी</option><option>इंग्रजी</option>
+        <option>गणित</option><option>विज्ञान</option><option>परिसर१/२</option>
+        <option>इतिहास</option><option>भूगोल</option><option>कला</option>
+        <option>कार्यानुभव</option><option>शा. शिक्षण</option>
+      </select>
+    </label>
+    <label>विषय शिक्षक:
+      <select id="teacherSelect">
+        <option value="">--निवडा--</option>
+        <option>श्रीम. कुवर एस.पी.</option><option>श्रीम. गोकुळे एस.</option>
+        <option>श्री. वाघमारे एस.एन.</option><option>श्रीम. तुंगार एस. बी.</option>
+        <option>श्री. निंबेकर.एस.एल.</option><option>श्रीम. शिवदे आर.डी.</option>
+        <option>श्रीम. ठाकूर पी.बी.</option><option>सौ. अमृतकर एस.एम.</option>
+        <option>श्री. वाळूंज.एम.बी.</option><option>श्रीम. राजपूत पी.आर.</option>
+        <option>श्री. कापडणीस पी.एन.</option><option>श्री. चव्हाण एल.एम.</option>
+        <option>सौ. धामणे एस.वाय.</option><option>सौ. भावसार एस.एम.</option>
+        <option>श्री. गवळी पी.पी.</option><option>श्री. गावित व्ही.</option>
+        <option>श्री. कोठावदे एस.पी.</option>
+      </select>
+    </label>
+    <button class="go-btn" onclick="loadStudents()">Go</button>
+
+  </div>
+    
+   <div id="tablesContainer"></div>
+  <div id="pdfButtonContainer" style="text-align:center;"></div>
+
+  <!-- html2pdf.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+  <script>
+    // Student Data (unchanged)
+    const studentData = {
+      "5-A": ["शर्वरी संतोष सुरवाडे","आराध्या सुनील फुपाटे","चैताली जयराम डगळे",
+        "गौरी शरद मुंजे","ईश्वरी संजय डगळे","मानसी कमलाकर निंबेकर",
+        "पायल शिवाजी रौंदळे","मीताक्षी मुकुंदा डगळे","समृद्धी पांडुरंग झोले",
+        "श्रेया श्रावण बोंबले","अंकिता आकाश गायकवाड","अनन्या संपत जुंद्रे",
+        "आराध्या योगेश दाते","आरोही ज्ञानेश्वर पगार","आर्या समाधान दाते",
+        "भक्ती दिनकर दाते","दिव्या नवनाथ दाते","दुर्वा शिवराम पोरजे",
+        "गौरी नामदेव पगार","गायत्री एकनाथ दाते","ईश्वरी भाऊसाहेब मोरे",
+        "जान्हवी गणेश पगार","मानसी समाधान बोडके","स्वरा धनाजी पगार",
+        "श्रावणी पोपट पगार","आर्यन शशिकांत शिंदे","दर्शन हिरामण कचरे",
+        "हर्षद विष्णू निंबेकर","रंजन शरद कचरे","ऋषिकेश अशोक भोईर",
+        "सौरभ सुनील दसुडे","आदित्य गणेश चव्हाण","विनोद सुनील मोहिते",
+        "अभिमन्यू संतोष मोरे","कृष्णा विलास मोरे","प्रथमेश केशव दाते",
+        "ऋषभ रवींद्र मोरे","ऋषिकेश गोटीराम दाते","साई सचिन दाते",
+        "साई संदीप महाले","श्लोक सुरेश दाते","यश उमेश पगार"
+      ],
+      "5-B": ["भाग्यश्री गणपत बुरंगे","चित्रा अनिल लहांगे","चैताली अनिल लहांगे",
+        "दिव्या गोकुळ निंबेकर","गौरी कैलास गोरे","ईश्वरी राजेंद्र डगळे",
+        "कावेरी पप्पू खोडे","माधुरी संजय शिवरे","माधुरी सिताराम झुरडे",
+        "मनीषा सोमनाथ कोरडे","मयुरी बळवंत निंबेकर","प्रतीक्षा भाऊराव भोईर",
+        "पुनम भिका भोईर","रुचिता कैलास निंबेकर","शुभ्रा कैलास पाटील",
+        "सुहानी संदीप निंबेकर","स्वीटी योगेश ससाणे","वैष्णवी मोहन भोईर",
+        "वैष्णवी रमेश इंगळे","योगेश्वरी संतोष निंबेकर","आर्णव सुरेश निंबेकर",
+        "अमोल मोहन निंबेकर","आशिष गणेश दाते","दक्ष नागेश भोईर",
+        "हर्षद पांडुरंग डगळे","कार्तिकी जयराम निंबेकर","केशव संतोष महाले",
+        "मनोज संदीप लहांगे","निखिल पप्पू निंबेकर","ओमकार राजेंद्र निंबेकर",
+        "पार्थ संतोष दाते","प्रेम लक्ष्मण झुरडे","रुद्र रामनाथ निंबेकर",
+        "रुद्र सचिन मोरे","ऋषिकेश पांडुरंग झोले","साहिल छगन निंबेकर",
+        "सोहम सुरेश"
+      ],
+      "6-A": ["श्रेया सचिन तालखे",
+"माधुरी रमेश मुंजे",
+"भार्गवी प्रमोद गुंबाडे",
+"संजना प्रकाश शेवरे",
+"सोनाली किसान निंबेकर",
+"गौरी हरी बेंडकोळी",
+"चैताली रघुनाथ हासले",
+"प्रतिभा बंडू निंबेकर",
+"अंकिता जालंदर पाडेकर", 
+"गौरी ज्ञानेश्वर मोरे",
+"आरुषी ज्ञानेश्वर धोंगडे",
+"अक्षदा बाळू मोरे",
+"पल्लवी संपत गायकर",
+"अनुष्का रमेश दाते",
+"वेदिका गणेश पगार",
+"पूर्वा समाधान दाते",
+"स्वरा तुकाराम पगार",
+"यश सुरेश निंबेकर",
+"विजय राजेंद्र निंबेकर",
+"रुद्र कमलाकर चव्हाण",
+"श्री विकास मोरे",
+"स्वराज विष्णू कांडेकर",
+"अक्षय नवनाथ पगार",
+],
+"6-B" : ["साक्षी सुरेश खाटीकडे",
+"प्रिया माधव आचारी",
+"पल्लवी विजय आचारी",
+"दिव्या मच्छिंद्र बदादे",
+"कावेरी चांगदेव भोये",
+"स्वप्नाली भिका भोईर",
+"निकिता तानाजी हांबरे",
+"सारिका छबन निंबेकर",
+"साक्षी सुरेश निंबेकर",
+"अक्षदा नंदकिशोर निंबेकर",
+"अंकिता मोहन निंबेकर",
+"गौरी अरुण निंबेकर",
+"राणी विलास कुंभार",
+"प्राची रामदास मराडे",
+"साक्षी भाऊसाहब म्हसे",
+"ईश्वरी कैलास पोटिंदे",
+"राधिका संजय ठाकूर",
+"आर्यन तुकाराम चव्हाण",
+"साहिल समाधान आचारी",
+"लखन सुरेश बिन्नर",
+"स्वप्नील नानाजी भोईर",
+"प्रेम पाडुरंग डगळे",
+"मयन गणेश दळवी",
+"कार्तिक संदीप निंबेकर",
+"साई हरी निंबेकर",
+"प्रणव भिमा निंबेकर",
+"विवेक लक्ष्मण निंबेकर",
+"प्रसाद छगन कचरे",
+"यश समार कचरे",
+"कार्तिक योगेश पाडेकर",
+"यश आनंदा वाघ",
+"साई विनायक ससाणे",
+],
+"7-A": ["धनश्री रतन चव्हाण",
+"श्रेया बाळु चव्हाण",
+"अक्षदा जयराम डगळे",
+"गौरी खंडू बरबड़े",
+"जान्हवी समाधान बोडके",
+"अंकिता राजाराम दाते",
+"गौरी कृष्णा दाते",
+"प्रांजल बाजीराव दाते",
+"वेदिका नवनाथ दाते",
+"ईश्वरी नाना खांडबहाले",
+"ज्ञानेश्वरी बापू खांडबहाले",
+"लावण्या नामदेव पगार",
+"देवयानी शरद पगार",
+"ईश्वरी धनाजी पगार",
+"मानसी दिपक पगार",
+"ईश्वरी नितीन वडजे",
+"आनंदी जगन मोरे",
+"साईं सिताराम मोरे",
+"अंशु दत्तु गांगोडे",
+"वेदांत गोटीराम दाते",
+"पृथ्वीराज संदीप दाते",
+"पृथ्वी नवनाथ मोरे",
+"कार्तिक भाऊसाहेब मोरे",
+"सिद्धार्थ शिवराम मोरे",
+"सर्वेश योगेश मोरे",
+"कृष्णा नवनाथ मोरे",
+"राधव शांताराम पगार",
+"कार्तिक तानाजी पगार",
+"रूपेश नवनाथ पगार",
+"आयुष दौलत होण",
+"ऋषिकेश सोमनाथ मोरे",
+"आयुष हिरामन मोरे",
+"कृष्णा धोंडीराम पगार",
+"भार्गव झुंबर मोरे",
+"आराध्य विजय मोरे",
+"अभय निवृत्ती महाले",
+"विकास प्रकाश कडलग",
+"शिवम रामकुमार शर्मा",
+],
+"7-B" : ["दिव्या बबन निंबेकर",
+"गायत्री गणेश निंबेकर",
+"पूजा सोमा' निंबेकर",
+"संजीवनी विष्णू निंबेकर",
+"मोनिका नाना भोईर",
+"गौरी सोमनाथ कोरडे",
+"जयश्री हेमंत लोने",
+"नीलिमा भगवान वाघले",
+"पायल नंदू मराडे",
+"रुपाली शिवाजी हांबरे",
+"वंदना नाना वाघ",
+"कोमल दिलीप गायकवाड",
+"साक्षी हरिश्चंद्र शिद",
+"शिवानी हरी धोंगडे",
+"आशा आपा बदादे",
+"लक्ष्मी गजानन गुहाडे",
+"दिशा गणेश फडोळ",
+"पूजा गोकुळ दाते",
+"मयूर गोरख दाते",
+"अविनाश नाना कचरे",
+"साई राजेंद्र निंबेकर",
+"करण रंघनाथ भोईर",
+"पारस एकनाथ झोले",
+"प्रसाद शरद भोईर",
+"रोहित रामचंद्र कचरे",
+"कुणाल यशवंत बेंडकोळी",
+"अनिल संतोष बोरसे",
+"राम विष्णू वाघ",
+"आनंद विलास कुवर",
+"कुणाल प्रवीण कुंभार",
+],
+ "8-A" : ["गायत्री कैलास गोरे",
+"दिशा शशिकांत शिंदे",
+"प्रिती दत्तू निंबेकर",
+"तेजस्विनी कमलाकर चव्हाण",
+"स्वरा नवनाथ भालेराव",
+"दिया अशोक भालेराव",
+"अनुजा संतोष भालेराव",
+"श्रावणी हरि कोरडे",
+"कोमल शिवराम दाते",
+"गौरी दिनकर दाते",
+"आदिती ज्ञानेश्वर दाते",
+"नूतन नंदकिशोर पगार",
+"अश्विनी राजाराम पगार",
+"कादंबरी लक्ष्मण पगार",
+"आदिती दिलीप पगार",
+"स्मितल जालिंदर पगार",
+"मानसी तुकाराम पगार",
+"किर्ती संपत जोंधळे",
+"आदिती संतोष मोरे",
+"विशाल सुरेश निंबेकर",
+"आर्यन अंबादास निंबेकर",
+"साहिल शरद मुंजे",
+"मयूर मंगेश कांडेकर",
+"सार्थक सुदाम रहाडे",
+"स्वराज सुदाम भालेराव",
+"आयुष अशोक दाते",
+"आदित्य नवनाथ दाते",
+"सार्थक संतोष दाते",
+"रामहरी सुभाष खांडबहाले",
+"अभिजीत बबन मोरे",
+"आयुष बाळू मोरे",
+"साई शांताराम मोरे",
+"सौरभ रतन महाले",
+"केशव तुकाराम महाले",
+"अश्विन उमेश पगार",
+"कुणाल देविदास पगार",
+"साई अरुण पगार",
+"साई युवराज पगार",
+"यश चंद्रकांत पगार",
+"आर्यन त्रंबक थेटे",
+"गौरव भाऊसाहेब थेटे",
+],
+ "8-B" : ["खुशी राहुल शिंदे",
+"आश्विनी दिनकर भोईर",
+"नंदिनी नाना वाघ",
+"ज्योती अरुण निंबेकर",
+"प्रतिक्षा योगेश पाडेकर",
+"समिक्षा भाऊराव भोईर",
+"सह्याद्री अनिल लहांगे",
+"उज्वला रघुनाथ हसाळे",
+"वैष्णवी रवींद्र भगरे",
+"विजयालक्ष्मी संदीप निंबेकर",
+"दूर्वा अरुण भवारी",
+"खुशी समाधान आचारी",
+"चांदणी तुकाराम सदगीर",
+"देवयानी बबन ढोन्नर",
+"गायत्री योगेश बिन्नर",
+"अक्षदा रमेश दाते",
+"कार्तिकी एकनाथ महाले",
+"सार्थक बाळू चव्हाण",
+"खुशाल बळवंत निंबेकर",
+"पवन मच्छिंद्र बदोद",
+"पवन नागेश भोईर",
+"प्रशांत कमलाकर निंबेकर",
+"प्रथमेश छगन निंबेकर",
+"प्रेम गोरख निंबेकर",
+"वैभव मंगेश निंबेकर",
+"रोहित रामदास वाघ",
+"सचिन लक्ष्मण पोटिंदे",
+"संकेत राजेंद्र निंबेकर",
+"संभव संतोष कडाळे",
+"हर्षद भगवान वाघले",
+"शुभम संजय शेवरे",
+"प्रणव गणपत बुरंगे",
+"मयूर शिवराम मालक",
+"गणेश चांगदेव भोये",
+"योगेश हिरामण झुरडे",
+"कन्हैया रघुनाथ शिंदे",
+"राम सुरेश पगार",
+"सार्थक शंकर पगार",
+"आदेश विजय पगार",
+"आदित्य धनाजी दाते",
+],
+ "8-C" : ["कडलक वैशाली संजय",
+"नेटावटे अस्मिता गोकुळ",
+"कुंभार निशा विलास",
+"निंबेकर सुवर्णा अशोक",
+"निंबेकर निशा दगडू",
+"पावडे गौरी ज्ञानेश्वर",
+"पवार खुशी समाधान",
+"शिद शितल पुंडलिक",
+"ससाणे गायत्री योगेश",
+"सदगीर जयश्री बाजीराव",
+"व्हरगळ साक्षी रोहिदास",
+"कडलक केदार संदीप",
+"आचारी आदित्य विजय",
+"बोंबले मोहन श्रावण",
+"भोईर आदेश नवनाथ",
+"गारे गणेश बाळू",
+"जावळे कार्तिक भगवान",
+"कचरे सार्थक नाना",
+"कचरे सार्थक गुलाब",
+"खोडे कृष्णा सोमनाथ",
+"मराडे ओमकार निवृत्ती",
+"निंबेकर खुशाल शंकर",
+"निंबेकर विजय मधुकर",
+"निंबेकर समाधान बहिरूनाथ",
+"निंबेकर दिपक हरी",
+"ससाणे अविनाश अंकुश",
+"वाडगे सुनिल राजाराम",
+"वाघ प्रविण थोरात",
+"लक्ष्मण यश लक्ष्मण",
+"ढोन्नर कार्तिक योगेश",
+"सदगीर चेतन समाधान",
+"महाले पवन अर्जुन",
+"मोरे जनार्दन गोकुळ",
+],
+    };
+
+    // Table Template (keeps your format)
+    function createTable(startIndex, students, metaText) {
+      let html = `
+      <div class="school-heading">
+       <img src="https://raw.githubusercontent.com/prakashgawali2184-lgtm/Marklist/main/pvg1.png
+              ">
+ 
+       <div> 
+        <h4>पुणे विद्यार्थी गृहाचे</h4>
+        <h5>विद्याप्रशाला हायस्कूल व ज्युनि. कॉलेज, तळेगांव (अं.) ता.जि.नाशिक</h5>
+      </div>
+      </div>
+       
+      <div class="table-meta">
+        ${metaText}</div>
+       <table id="tablesContainer" class="page-break">
+        <thead>
+          <tr>
+            <th class="col-num" rowspan="2">ह.क्र.</th>
+            <th class="col-name" rowspan="2">विद्यार्थ्याचे नाव</th>
+            <th colspan="8">आकारिक मूल्यमापन - अ </th>
+            <th class="vertical" rowspan="2">एकूण (अ) </th>
+            <th rowspan="2">श्रेणी</th>
+          </tr>
+          <tr>
+            <th class="vertical small-col">दै. निरीक्षण</th>
+            <th class="vertical small-col">तोंडी काम</th>
+            <th class="vertical small-col">प्रात्य./प्रयोग</th>
+            <th class="vertical small-col">उपक्रम / कृती</th>
+            <th class="vertical small-col">प्रकल्प</th>
+            <th class="vertical small-col">चाचणी</th>
+            <th class="vertical small-col">स्वाध्याय / वर्गकार्य</th>
+            <th class="vertical small-col">इतर</th>
+            
+          </tr>
+        </thead>
+        <tbody>
+          <!-- ठेवलेले गुण row -->
+          <tr>
+            <td></td>
+<td><b>ठेवलेले गुण →</b></td>
+${'<td><input type="number"     enterkeyhint="enter" oninput="updateTotals(this)" /></td>'.repeat(8)}
+<td class="aTotal"></td>
+<td class="grade" style="visibility:hidden;"></td>
+</tr>
+`;
+      students.forEach((name, i) => {
+  html += `
+  <tr>
+    <td>${startIndex + i}</td>
+<td>${name}</td>
+${'<td><input type="text" inputmode="numeric" enterkeyhint="enter" oninput="updateTotals(this)" /></td>'.repeat(8)}
+<td class="aTotal"></td>
+<td class="grade"></td>
+</tr>`;
+});
+      html += "</tbody></table>";
+      return html;
+    }
+
+    // Replace vertical header cells with inline SVG text (bottom -> top)
+    function replaceVerticalHeaders() {
+      const ths = document.querySelectorAll('#tablesContainer th.vertical');
+      ths.forEach(th => {
+        // skip if already converted
+        if (th.dataset.svg === "done") return;
+
+        const txt = th.textContent.trim();
+        if (!txt) return;
+
+        // clear the cell
+        th.textContent = '';
+
+        // create an inline SVG that rotates the text so it's readable bottom->top
+        const svgNS = "http://www.w3.org/2000/svg";
+        const w = 32;   // width of svg area
+        const h = 120;  // height of svg area (tweak if text long)
+        const svg = document.createElementNS(svgNS, 'svg');
+        svg.setAttribute('width', w);
+        svg.setAttribute('height', h);
+        svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
+        svg.setAttribute('aria-hidden', 'true');
+
+        // center pivot
+        const cx = w / 2;
+        const cy = h / 2;
+
+        const textEl = document.createElementNS(svgNS, 'text');
+        textEl.setAttribute('x', cx);
+        textEl.setAttribute('y', cy);
+        textEl.setAttribute('text-anchor', 'middle');
+        textEl.setAttribute('dominant-baseline', 'middle');
+        textEl.setAttribute('transform', `rotate(-90 ${cx} ${cy})`);
+        textEl.setAttribute('style', 'font-family: "Noto Sans Devanagari", "Mangal", sans-serif; font-size:12px;');
+        textEl.textContent = txt;
+
+        svg.appendChild(textEl);
+        th.appendChild(svg);
+
+        // mark done so we don't double-convert
+        th.dataset.svg = "done";
+      });
+    }
+
+    function loadStudents() {
+  const sessionText = document.getElementById("sessionSelect").value;
+  const yearText = document.getElementById("yearSelect").value;
+  const classSelect = document.getElementById("classSelect");
+  const clsText = classSelect.options[classSelect.selectedIndex] ? classSelect.options[classSelect.selectedIndex].text : '';
+  const cls = classSelect.value;
+  const secSelect = document.getElementById("sectionSelect");
+  const secText = secSelect.options[secSelect.selectedIndex] ? secSelect.options[secSelect.selectedIndex].text : '';
+  const sec = secSelect.value;
+  const subjectText = document.getElementById("subjectSelect").value;
+  const teacherText = document.getElementById("teacherSelect").value;
+
+  if (!cls || !sec) { alert("इयत्ता आणि तुकडी निवडा"); return; }
+
+  const key = cls + "-" + sec;
+  const students = studentData[key];
+  if (!students) { alert("या वर्गासाठी यादी उपलब्ध नाही"); return; }
+
+  const container = document.getElementById("tablesContainer");
+  container.innerHTML = "";  // Clear old table
+
+  // --- Table meta info ---
+  const metaText = `
+    <div class="meta-row">${sessionText} • सन - ${yearText}</div>
+    <div class="meta-row">• इयत्ता - ${clsText} • तुकडी - ${secText} • विषय - ${subjectText} • विषय शिक्षक - ${teacherText}</div>
+  `;
+
+  // --- Create tables ---
+  const perPage = 25;
+  for (let i = 0; i < students.length; i += perPage) {
+    const chunk = students.slice(i, i + perPage);
+    container.innerHTML += createTable(i + 1, chunk, metaText);
+  }
+
+  // --- Fix vertical headers ---
+  replaceVerticalHeaders();
+
+  // --- Load saved data into inputs ---
+  loadData();
+
+  // --- Add PDF, Save, Clear buttons at the end ---
+  document.getElementById("pdfButtonContainer").innerHTML = `
+    <div class="action-buttons">
+      <button class="pdf-btn download" onclick="downloadPDF()">Download PDF</button>
+      <button class="pdf-btn save" onclick="saveData()">Save</button>
+      <button class="pdf-btn clear" onclick="clearData()">Clear</button>
+    </div>
+  `;
+}
+
+    
+    function updateTotals(input) {
+  const row = input.closest("tr");
+  if (!row) return;
+
+  const allInputs = Array.from(row.querySelectorAll("input"));
+
+  // --- Group A (first 8 inputs only) ---
+  let aSum = 0;
+  let aFilled = false;
+  for (let i = 0; i < 8; i++) {
+    const inp = allInputs[i];
+    if (!inp) continue;
+    const txt = String(inp.value ?? "").trim();
+    if (txt !== "") {
+      aFilled = true;
+      const v = parseFloat(txt);
+      if (!isNaN(v)) aSum += v;
+    }
+  }
+
+  // Update total (A)
+  const aCell = row.querySelector(".aTotal");
+  if (aCell) aCell.textContent = aFilled ? aSum : "";
+
+  // श्रेणी calculation
+  const gradeCell = row.querySelector(".grade");
+  if (aFilled) {
+    let gradeText = "";
+    if (aSum >= 91) gradeText = "अ१";
+    else if (aSum >= 81) gradeText = "अ२";
+    else if (aSum >= 71) gradeText = "ब१";
+    else if (aSum >= 61) gradeText = "ब२";
+    else if (aSum >= 51) gradeText = "क१";
+    else if (aSum >= 41) gradeText = "क२";
+    else if (aSum >= 31) gradeText = "ड";
+    else gradeText = "इ";
+    if (gradeCell) gradeCell.textContent = gradeText;
+  } else {
+    if (gradeCell) gradeCell.textContent = "";
+  }
+}
+
+
+
+    // PDF Export (unchanged)
+    function downloadPDF() {
+  const element = document.getElementById("tablesContainer");
+  const opt = {
+    margin: [12, 12, 12, 4],                // top/right/bottom/left in mm
+    filename: 'Marklist.pdf',
+    image: { type: 'jpeg', quality: 1 },
+    html2canvas: { scale: 5, useCORS: true, scrollY: 0 }, // <-- scale reduced to 2
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+    pagebreak: { mode: ['css', 'legacy'] }
+  };
+  // force shrink before rendering
+  element.style.maxWidth = "100%";
+  element.style.transform = "scale(0.97)";
+  element.style.transformOrigin = "top left";
+  html2pdf().from(element).set(opt).save();
+  }
+// === Enter key moves down in same column ===
+  document.addEventListener("keydown", function(e) {
+    if (e.key === "Enter") {
+      const active = document.activeElement;
+      if (active && active.tagName === "INPUT") {
+        e.preventDefault();
+
+        // Find current cell
+        const td = active.closest("td");
+        const tr = active.closest("tr");
+        if (!td || !tr) return;
+
+        // Column index of active cell
+        const colIndex = Array.from(tr.children).indexOf(td);
+
+        // Next row
+        const nextRow = tr.nextElementSibling;
+        if (!nextRow) return;
+
+        const nextCell = nextRow.children[colIndex];
+        if (!nextCell) return;
+
+        const nextInput = nextCell.querySelector("input");
+        if (nextInput) {
+          nextInput.focus();
+        }
+      }
+    }
+  });
+    
+  function getStorageKey() {
+  const cls = document.getElementById("classSelect").value || "";
+  const sec = document.getElementById("sectionSelect").value || "";
+  const sessionText = document.getElementById("sessionSelect").value || "";
+  const yearText = document.getElementById("yearSelect").value || "";
+  const subjectText = document.getElementById("subjectSelect").value || "";
+  const teacherText = document.getElementById("teacherSelect").value || "";
+  if (!cls || !sec) return null;
+  return "marklist_" + encodeURIComponent(`${cls}-${sec}|${sessionText}|${yearText}|${subjectText}|${teacherText}`);
+}
+
+function saveData() {
+  const storageKey = getStorageKey();
+  if (!storageKey) { alert("इयत्ता आणि तुकडी निवडा आणि नंतर Save करा."); return; }
+
+  const data = [];
+  document.querySelectorAll("#tablesContainer tbody tr").forEach(row => {
+    const rowArr = [];
+    row.querySelectorAll("input").forEach(input => rowArr.push(input.value));
+    data.push(rowArr);
+  });
+
+  localStorage.setItem(storageKey, JSON.stringify(data));
+  alert("✅ Data saved successfully!");
+}
+
+function loadData() {
+  const storageKey = getStorageKey();
+  if (!storageKey) return;
+
+  const raw = localStorage.getItem(storageKey);
+  if (!raw) return;
+
+  let data;
+  try { data = JSON.parse(raw); } catch (err) { return; }
+
+  const rows = document.querySelectorAll("#tablesContainer tbody tr");
+  rows.forEach((row, rIndex) => {
+    const inputs = Array.from(row.querySelectorAll("input"));
+    const savedRow = data[rIndex] || [];
+    inputs.forEach((input, cIndex) => {
+      input.value = savedRow[cIndex] || "";
+      input.dispatchEvent(new Event("input", { bubbles: true })); // recalc totals
+    });
+  });
+}
+
+function clearData() {
+  const storageKey = getStorageKey();
+  if (!storageKey) { alert("इयत्ता आणि तुकडी निवडा आणि नंतर Clear करा."); return; }
+  if (!confirm("Clear all filled marks for this selection?")) return;
+
+  document.querySelectorAll("#tablesContainer tbody tr").forEach(row => {
+    row.querySelectorAll("input").forEach(input => {
+      input.value = "";
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+    });
+    const a = row.querySelector(".aTotal"); if (a) a.textContent = "";
+    const b = row.querySelector(".bTotal"); if (b) b.textContent = "";
+    const g = row.querySelector(".grandTotal"); if (g) g.textContent = "";
+    const grade = row.querySelector(".grade"); if (grade) grade.textContent = "";
+  });
+
+  localStorage.removeItem(storageKey);
+  alert("Cleared & removed saved data for this selection.");
+}
+
+</script>
+</body>
+</html>
